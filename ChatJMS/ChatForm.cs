@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Forms;
 using ChatJMS.Controls;
 using ChatJMS.Models;
@@ -7,6 +8,7 @@ namespace ChatJMS
 {
     public delegate void ClickConItem(Conversation c);
     public delegate void ChatlistDelegate();
+    public delegate void ChatMessageDelegate();
 
     public partial class ChatForm : Form
     {
@@ -21,17 +23,21 @@ namespace ChatJMS
             Width = 240;
             _connection = new JmsConnection(Username);
             _clickConItem = OpenConversation;
-            _connection.Chatlist += UpdateChatList;
+            _connection.ChatlistUpdateDelegate += UpdateChatList;
+            _connection.ChatMessageUpdateDelegate += UpdateChatMessages;
         }
 
         private void OpenConversation(Conversation c)
         {
             _connection.ActiveConversation = c;
+            var conversation = c as GroupConversation;
+            gbConversation.Text = conversation != null ? conversation.GetGroupName() : ((PersonalConversation)c).GetAuthor();
+            UpdateChatMessages();
             if (Width != 834)
                 FormTransform.TransformSize(this, 834, Height);
         }
 
-        delegate void UpdateChatListDelegate();
+        private delegate void UpdateChatListDelegate();
 
         private void UpdateChatList()
         {
@@ -42,11 +48,32 @@ namespace ChatJMS
                 return;
             }
             flpConversations.Controls.Clear();
-            foreach (var con in _connection.GetConversations())
+            _connection.GetConversations().Sort(new DateComparator());
+            foreach (var con in _connection.GetConversations().ToList())
             {
                 var c = new ConversationItem(con);
                 c.ClickItem += _clickConItem;
                 flpConversations.Controls.Add(c);
+            }
+        }
+
+        private delegate void UpdateChatMessagesDelegate();
+
+        private void UpdateChatMessages()
+        {
+            if (flpChat.InvokeRequired)
+            {
+                var d = new UpdateChatMessagesDelegate(UpdateChatMessages);
+                Invoke(d);
+                return;
+            }
+            flpChat.Controls.Clear();
+            foreach (var message in _connection.ActiveConversation.GetMessages())
+            {
+                var conversationItem = new ConversationItem(message);
+                if (message.GetAuthor().Equals(Username))
+                    conversationItem.Margin = new Padding(375,0,0,0);
+                flpChat.Controls.Add(conversationItem);
             }
         }
 
@@ -84,6 +111,8 @@ namespace ChatJMS
             if (!_connection.SendMessage(messageText, _connection.ActiveConversation.GetDestination())) return;
             var c = new ChatMessage(Username, DateTime.Now, tbMessage.Text);
             _connection.ActiveConversation.AddMessage(c);
+            UpdateChatList();
+            UpdateChatMessages();
             tbMessage.Text = "";
         }
     }

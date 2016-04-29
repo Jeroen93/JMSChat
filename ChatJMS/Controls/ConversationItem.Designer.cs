@@ -30,6 +30,7 @@
         {
             this.lblUsername = new System.Windows.Forms.Label();
             this.lblLastMessage = new System.Windows.Forms.Label();
+            this.lblDate = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblUsername
@@ -51,15 +52,25 @@
             this.lblLastMessage.TabIndex = 1;
             this.lblLastMessage.Text = "label1";
             // 
+            // lblDate
+            // 
+            this.lblDate.AutoSize = true;
+            this.lblDate.Location = new System.Drawing.Point(150, 14);
+            this.lblDate.Name = "lblDate";
+            this.lblDate.Size = new System.Drawing.Size(35, 13);
+            this.lblDate.TabIndex = 2;
+            this.lblDate.Text = "label1";
+            // 
             // ConversationItem
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Controls.Add(this.lblDate);
             this.Controls.Add(this.lblLastMessage);
             this.Controls.Add(this.lblUsername);
             this.Name = "ConversationItem";
-            this.Size = new System.Drawing.Size(194, 64);
+            this.Size = new System.Drawing.Size(189, 64);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ConversationItem_MouseClick);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -70,5 +81,6 @@
 
         private System.Windows.Forms.Label lblUsername;
         private System.Windows.Forms.Label lblLastMessage;
+        private System.Windows.Forms.Label lblDate;
     }
 }

@@ -10,7 +10,8 @@ namespace ChatJMS
 {
     internal class JmsConnection : IMessageListener
     {
-        public event ChatlistDelegate Chatlist;
+        public event ChatlistDelegate ChatlistUpdateDelegate;
+        public event ChatMessageDelegate ChatMessageUpdateDelegate;
         private IConnection _connection;
         private ISession _session;
         private IDictionary<string, List<IMessageConsumer>> _consumers;
@@ -58,9 +59,9 @@ namespace ChatJMS
                 var message = _session.CreateTextMessage(messageText);
                 message.SetStringProperty("author", _username);
 
-                if (destination.ToString().Contains("/topic/"))
+                if (IsTopic(destination))
                 {
-                    var grp = (GroupConversation) ActiveConversation;
+                    var grp = (GroupConversation)ActiveConversation;
                     message.SetBooleanProperty("group", true);
                     message.SetStringProperty("groupName", grp.GetGroupName());
                 }
@@ -76,6 +77,18 @@ namespace ChatJMS
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
+                return false;
+            }
+        }
+
+        private static bool IsTopic(IDestination destination)
+        {
+            try
+            {
+                return (ITopic)destination != null;
+            }
+            catch (Exception)
+            {
                 return false;
             }
         }
@@ -128,7 +141,7 @@ namespace ChatJMS
             {
                 if (!(message is ITextMessage))
                     return;
-                var textMessage = (ITextMessage) message;
+                var textMessage = (ITextMessage)message;
                 if (textMessage.GetBooleanProperty("group"))
                 {
                     HandleOnGroupMessage(textMessage);
@@ -167,19 +180,14 @@ namespace ChatJMS
                 srp = new PersonalConversation(new ChatMessage(author, DateTime.Now, textMessage.Text),
                     GetDestination("/queue/" + author));
                 _conversations.Add(srp);
-                //TODO: notify user
-                Chatlist?.Invoke();
             }
-            else
+            var cm = new ChatMessage(author, DateTime.Now, textMessage.Text);
+            srp.AddMessage(cm);
+            if (ActiveConversation != null && ActiveConversation.Equals(srp))
             {
-                if (ActiveConversation == null || !ActiveConversation.Equals(srp))
-                {
-                    //TODO: notify user
-                }
-                var cm = new ChatMessage(author, DateTime.Now, textMessage.Text);
-                srp.AddMessage(cm);
-
+                ChatMessageUpdateDelegate?.Invoke();
             }
+            ChatlistUpdateDelegate?.Invoke();
         }
 
         private PersonalConversation GetPersonalConversationByAuthor(string author)

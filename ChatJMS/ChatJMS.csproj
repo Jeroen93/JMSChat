@@ -75,6 +75,7 @@
       <DependentUpon>ConversationItem.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\FormTransform.cs" />
+    <Compile Include="DateComparator.cs" />
     <Compile Include="JMSConnection.cs" />
     <Compile Include="Models\ChatMessage.cs" />
     <Compile Include="Models\Conversation.cs" />

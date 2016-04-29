@@ -37,9 +37,9 @@
             this.label2 = new System.Windows.Forms.Label();
             this.tbGroupCon = new System.Windows.Forms.TextBox();
             this.gbConversation = new System.Windows.Forms.GroupBox();
-            this.flpChat = new System.Windows.Forms.FlowLayoutPanel();
-            this.tbMessage = new System.Windows.Forms.TextBox();
             this.btnSendMessage = new System.Windows.Forms.Button();
+            this.tbMessage = new System.Windows.Forms.TextBox();
+            this.flpChat = new System.Windows.Forms.FlowLayoutPanel();
             this.gbConversation.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -126,21 +126,6 @@
             this.gbConversation.TabStop = false;
             this.gbConversation.Text = "groupBox1";
             // 
-            // flpChat
-            // 
-            this.flpChat.AutoScroll = true;
-            this.flpChat.Location = new System.Drawing.Point(7, 20);
-            this.flpChat.Name = "flpChat";
-            this.flpChat.Size = new System.Drawing.Size(565, 371);
-            this.flpChat.TabIndex = 0;
-            // 
-            // tbMessage
-            // 
-            this.tbMessage.Location = new System.Drawing.Point(7, 399);
-            this.tbMessage.Name = "tbMessage";
-            this.tbMessage.Size = new System.Drawing.Size(484, 20);
-            this.tbMessage.TabIndex = 1;
-            // 
             // btnSendMessage
             // 
             this.btnSendMessage.Location = new System.Drawing.Point(497, 397);
@@ -150,6 +135,23 @@
             this.btnSendMessage.Text = "Send";
             this.btnSendMessage.UseVisualStyleBackColor = true;
             this.btnSendMessage.Click += new System.EventHandler(this.btnSendMessage_Click);
+            // 
+            // tbMessage
+            // 
+            this.tbMessage.Location = new System.Drawing.Point(7, 399);
+            this.tbMessage.Name = "tbMessage";
+            this.tbMessage.Size = new System.Drawing.Size(484, 20);
+            this.tbMessage.TabIndex = 1;
+            // 
+            // flpChat
+            // 
+            this.flpChat.AutoScroll = true;
+            this.flpChat.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flpChat.Location = new System.Drawing.Point(7, 20);
+            this.flpChat.Name = "flpChat";
+            this.flpChat.Size = new System.Drawing.Size(565, 371);
+            this.flpChat.TabIndex = 0;
+            this.flpChat.WrapContents = false;
             // 
             // ChatForm
             // 
