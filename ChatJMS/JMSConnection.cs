@@ -12,13 +12,13 @@ namespace ChatJMS
     {
         public event ChatlistDelegate ChatlistUpdateDelegate;
         public event ChatMessageDelegate ChatMessageUpdateDelegate;
+
+        public Conversation ActiveConversation;
+
         private IConnection _connection;
         private ISession _session;
         private IDictionary<string, List<IMessageConsumer>> _consumers;
-
         private readonly List<Conversation> _conversations = new List<Conversation>();
-        public Conversation ActiveConversation;
-
         private readonly string _username;
         private readonly string _personalQueue;
         private const string Serverlocation = "ws://localhost:8001/jms";
@@ -49,6 +49,13 @@ namespace ChatJMS
             {
                 _connection?.Close();
             }
+        }
+
+        public void Disconnect()
+        {
+            _session.Close();
+            _connection.Close();
+            _connection = null;
         }
 
         public bool SendMessage(string messageText, IDestination destination)

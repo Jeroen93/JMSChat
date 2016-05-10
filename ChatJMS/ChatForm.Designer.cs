@@ -40,7 +40,12 @@
             this.btnSendMessage = new System.Windows.Forms.Button();
             this.tbMessage = new System.Windows.Forms.TextBox();
             this.flpChat = new System.Windows.Forms.FlowLayoutPanel();
+            this.panelUsername = new System.Windows.Forms.Panel();
+            this.btnUsername = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.tbUsername = new System.Windows.Forms.TextBox();
             this.gbConversation.SuspendLayout();
+            this.panelUsername.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblUsername
@@ -68,6 +73,7 @@
             this.tbPersonalCon.Name = "tbPersonalCon";
             this.tbPersonalCon.Size = new System.Drawing.Size(172, 20);
             this.tbPersonalCon.TabIndex = 2;
+            this.tbPersonalCon.TextChanged += new System.EventHandler(this.OnTextChange);
             // 
             // label1
             // 
@@ -80,6 +86,7 @@
             // 
             // btnPersonalCon
             // 
+            this.btnPersonalCon.Enabled = false;
             this.btnPersonalCon.Location = new System.Drawing.Point(190, 369);
             this.btnPersonalCon.Name = "btnPersonalCon";
             this.btnPersonalCon.Size = new System.Drawing.Size(23, 23);
@@ -90,6 +97,7 @@
             // 
             // btnGroupCon
             // 
+            this.btnGroupCon.Enabled = false;
             this.btnGroupCon.Location = new System.Drawing.Point(190, 418);
             this.btnGroupCon.Name = "btnGroupCon";
             this.btnGroupCon.Size = new System.Drawing.Size(23, 23);
@@ -113,6 +121,7 @@
             this.tbGroupCon.Name = "tbGroupCon";
             this.tbGroupCon.Size = new System.Drawing.Size(172, 20);
             this.tbGroupCon.TabIndex = 5;
+            this.tbGroupCon.TextChanged += new System.EventHandler(this.OnTextChange);
             // 
             // gbConversation
             // 
@@ -128,6 +137,7 @@
             // 
             // btnSendMessage
             // 
+            this.btnSendMessage.Enabled = false;
             this.btnSendMessage.Location = new System.Drawing.Point(497, 397);
             this.btnSendMessage.Name = "btnSendMessage";
             this.btnSendMessage.Size = new System.Drawing.Size(75, 23);
@@ -142,6 +152,7 @@
             this.tbMessage.Name = "tbMessage";
             this.tbMessage.Size = new System.Drawing.Size(484, 20);
             this.tbMessage.TabIndex = 1;
+            this.tbMessage.TextChanged += new System.EventHandler(this.OnTextChange);
             // 
             // flpChat
             // 
@@ -153,11 +164,50 @@
             this.flpChat.TabIndex = 0;
             this.flpChat.WrapContents = false;
             // 
+            // panelUsername
+            // 
+            this.panelUsername.Controls.Add(this.btnUsername);
+            this.panelUsername.Controls.Add(this.label3);
+            this.panelUsername.Controls.Add(this.tbUsername);
+            this.panelUsername.Location = new System.Drawing.Point(0, 0);
+            this.panelUsername.Name = "panelUsername";
+            this.panelUsername.Size = new System.Drawing.Size(229, 130);
+            this.panelUsername.TabIndex = 9;
+            // 
+            // btnUsername
+            // 
+            this.btnUsername.Enabled = false;
+            this.btnUsername.Location = new System.Drawing.Point(192, 52);
+            this.btnUsername.Name = "btnUsername";
+            this.btnUsername.Size = new System.Drawing.Size(23, 23);
+            this.btnUsername.TabIndex = 7;
+            this.btnUsername.Text = ">";
+            this.btnUsername.UseVisualStyleBackColor = true;
+            this.btnUsername.Click += new System.EventHandler(this.btnUsername_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(14, 35);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(115, 13);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Enter a valid username";
+            // 
+            // tbUsername
+            // 
+            this.tbUsername.Location = new System.Drawing.Point(14, 54);
+            this.tbUsername.Name = "tbUsername";
+            this.tbUsername.Size = new System.Drawing.Size(172, 20);
+            this.tbUsername.TabIndex = 5;
+            this.tbUsername.TextChanged += new System.EventHandler(this.OnTextChange);
+            // 
             // ChatForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(818, 450);
+            this.ClientSize = new System.Drawing.Size(818, 451);
+            this.Controls.Add(this.panelUsername);
             this.Controls.Add(this.gbConversation);
             this.Controls.Add(this.btnGroupCon);
             this.Controls.Add(this.label2);
@@ -173,6 +223,8 @@
             this.Text = "Chat with JMS";
             this.gbConversation.ResumeLayout(false);
             this.gbConversation.PerformLayout();
+            this.panelUsername.ResumeLayout(false);
+            this.panelUsername.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -192,6 +244,10 @@
         private System.Windows.Forms.Button btnSendMessage;
         private System.Windows.Forms.TextBox tbMessage;
         private System.Windows.Forms.FlowLayoutPanel flpChat;
+        private System.Windows.Forms.Panel panelUsername;
+        private System.Windows.Forms.Button btnUsername;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox tbUsername;
     }
 }
 

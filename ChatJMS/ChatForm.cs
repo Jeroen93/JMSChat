@@ -12,8 +12,8 @@ namespace ChatJMS
 
     public partial class ChatForm : Form
     {
-        private readonly JmsConnection _connection;
-        private const string Username = "Jeroen";
+        private JmsConnection _connection;
+        private string _username;
 
         private readonly ClickConItem _clickConItem;
 
@@ -21,10 +21,8 @@ namespace ChatJMS
         {
             InitializeComponent();
             Width = 240;
-            _connection = new JmsConnection(Username);
+            Height = 150;
             _clickConItem = OpenConversation;
-            _connection.ChatlistUpdateDelegate += UpdateChatList;
-            _connection.ChatMessageUpdateDelegate += UpdateChatMessages;
         }
 
         private void OpenConversation(Conversation c)
@@ -71,8 +69,8 @@ namespace ChatJMS
             foreach (var message in _connection.ActiveConversation.GetMessages())
             {
                 var conversationItem = new ConversationItem(message);
-                if (message.GetAuthor().Equals(Username))
-                    conversationItem.Margin = new Padding(375,0,0,0);
+                if (message.GetAuthor().Equals(_username))
+                    conversationItem.Margin = new Padding(375, 0, 0, 0);
                 flpChat.Controls.Add(conversationItem);
             }
         }
@@ -80,8 +78,6 @@ namespace ChatJMS
         private void btnPersonalCon_Click(object sender, EventArgs e)
         {
             var text = tbPersonalCon.Text;
-            if (text.Equals(""))
-                return;
             var destination = "/queue/" + text;
             _connection.SubscribeTo(destination);
             tbPersonalCon.Text = "";
@@ -93,8 +89,6 @@ namespace ChatJMS
         private void btnGroupCon_Click(object sender, EventArgs e)
         {
             var text = tbGroupCon.Text;
-            if (text.Equals(""))
-                return;
             var destination = "/topic/" + text;
             _connection.SubscribeTo(destination);
             tbGroupCon.Text = "";
@@ -106,14 +100,32 @@ namespace ChatJMS
         private void btnSendMessage_Click(object sender, EventArgs e)
         {
             var messageText = tbMessage.Text;
-            if (messageText.Equals(""))
-                return;
             if (!_connection.SendMessage(messageText, _connection.ActiveConversation.GetDestination())) return;
-            var c = new ChatMessage(Username, DateTime.Now, tbMessage.Text);
+            var c = new ChatMessage(_username, DateTime.Now, tbMessage.Text);
             _connection.ActiveConversation.AddMessage(c);
             UpdateChatList();
             UpdateChatMessages();
             tbMessage.Text = "";
+        }
+
+        private void btnUsername_Click(object sender, EventArgs ea)
+        {
+            _username = tbUsername.Text;
+            _connection = new JmsConnection(_username);
+            _connection.ChatlistUpdateDelegate += UpdateChatList;
+            _connection.ChatMessageUpdateDelegate += UpdateChatMessages;
+            FormClosing += (s, e) => { _connection.Disconnect(); };
+            panelUsername.Visible = false;
+            lblUsername.Text = _username;
+            FormTransform.TransformSize(this, Width, 490);
+        }
+
+        private void OnTextChange(object s, EventArgs e)
+        {
+            btnUsername.Enabled = !string.IsNullOrWhiteSpace(tbUsername.Text);
+            btnPersonalCon.Enabled = !string.IsNullOrWhiteSpace(tbPersonalCon.Text);
+            btnGroupCon.Enabled = !string.IsNullOrWhiteSpace(tbGroupCon.Text);
+            btnSendMessage.Enabled = !string.IsNullOrWhiteSpace(tbMessage.Text);
         }
     }
 }

@@ -92,7 +92,7 @@ namespace ChatJMS.Controls
         {
             //Do avoid uneven jumps, do not change the width if it is
             //within the step amount
-            if (Math.Abs(current - target) <= Math.Abs(step)) return false;
+            if (Math.Abs(current - target) < Math.Abs(step)) return false;
 
             return (step > 0 && current < target) || //increasing direction - keep going if still too small
                    (step < 0 && current > target); //decreasing direction - keep going if still too large
