@@ -147,7 +147,10 @@ namespace ChatJMS
             try
             {
                 if (!(message is ITextMessage))
+                {
+                    Translate(message);
                     return;
+                }
                 var textMessage = (ITextMessage)message;
                 if (textMessage.GetBooleanProperty("group"))
                 {
@@ -181,6 +184,7 @@ namespace ChatJMS
         private void HandleOnPersonalMessage(ITextMessage textMessage)
         {
             var author = textMessage.GetStringProperty("author");
+            if (author.Equals(_username)) return; //Nodig voor vreemde loopback en bijbehorende bugs
             var srp = GetPersonalConversationByAuthor(author);
             if (srp == null)
             {
@@ -195,6 +199,14 @@ namespace ChatJMS
                 ChatMessageUpdateDelegate?.Invoke();
             }
             ChatlistUpdateDelegate?.Invoke();
+        }
+
+        private void Translate(IMessage message)
+        {
+            message.SetStringProperty("applicant", _personalQueue);
+            var producer = _session.CreateProducer(GetDestination("/queue/JmsTranslator"));
+            producer.Send(message);
+            producer.Close();
         }
 
         private PersonalConversation GetPersonalConversationByAuthor(string author)
