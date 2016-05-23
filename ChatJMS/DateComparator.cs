@@ -7,7 +7,7 @@ namespace ChatJMS
     {
         public int Compare(Conversation x, Conversation y)
         {
-            return x.GetLastInteraction().CompareTo(y.GetLastInteraction());
+            return y.GetLastInteraction().CompareTo(x.GetLastInteraction());
         }
     }
 }

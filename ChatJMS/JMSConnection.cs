@@ -76,7 +76,7 @@ namespace ChatJMS
                 {
                     message.SetBooleanProperty("group", false);
                 }
-
+                //message.JMSReplyTo = GetDestination(_personalQueue);
                 producer.Send(message);
                 producer.Close();
                 return true;
@@ -148,7 +148,7 @@ namespace ChatJMS
             {
                 if (!(message is ITextMessage))
                 {
-                    Translate(message);
+                    Translate((IBytesMessage)message);
                     return;
                 }
                 var textMessage = (ITextMessage)message;
@@ -169,22 +169,19 @@ namespace ChatJMS
 
         private void HandleOnGroupMessage(ITextMessage textMessage)
         {
-            if (textMessage.GetStringProperty("autor").Equals(_username))
-                return;
-            foreach (var con in _conversations)
-            {
-                var grp = (GroupConversation)con;
-                if (!grp.GetGroupName().Equals(textMessage.GetStringProperty("groupName"))) continue;
-                var cm = new ChatMessage(textMessage.GetStringProperty("author"), DateTime.Now, textMessage.Text);
-                grp.AddMessage(cm);
-                //TODO: notify user
-            }
+            var groupname = textMessage.GetStringProperty("groupName");
+            var author = textMessage.GetStringProperty("author");
+            if (author.Equals(_username)) return;
+            var grp = GetGroupConversationByGroupname(groupname);
+            var cm = new ChatMessage(author, DateTime.Now, textMessage.Text);
+            grp.AddMessage(cm);
+            UpdateScreen(grp);
         }
 
         private void HandleOnPersonalMessage(ITextMessage textMessage)
         {
             var author = textMessage.GetStringProperty("author");
-            if (author.Equals(_username)) return; //Nodig voor vreemde loopback en bijbehorende bugs
+            if (author.Equals(_username)) return;
             var srp = GetPersonalConversationByAuthor(author);
             if (srp == null)
             {
@@ -194,24 +191,38 @@ namespace ChatJMS
             }
             var cm = new ChatMessage(author, DateTime.Now, textMessage.Text);
             srp.AddMessage(cm);
-            if (ActiveConversation != null && ActiveConversation.Equals(srp))
-            {
-                ChatMessageUpdateDelegate?.Invoke();
-            }
-            ChatlistUpdateDelegate?.Invoke();
+            UpdateScreen(srp);
         }
 
-        private void Translate(IMessage message)
+        private void Translate(IBytesMessage received)
         {
-            message.SetStringProperty("applicant", _personalQueue);
+            var bytes = new byte[(int)received.BodyLength];
+            received.ReadBytes(bytes);
+            var messageToSend = _session.CreateBytesMessage();
+            messageToSend.WriteBytes(bytes);
+            messageToSend.JMSReplyTo = GetDestination(_personalQueue);
             var producer = _session.CreateProducer(GetDestination("/queue/JmsTranslator"));
-            producer.Send(message);
+            producer.Send(messageToSend);
             producer.Close();
         }
 
         private PersonalConversation GetPersonalConversationByAuthor(string author)
         {
             return _conversations.OfType<PersonalConversation>().FirstOrDefault(pc => pc.GetAuthor().Equals(author));
+        }
+
+        private GroupConversation GetGroupConversationByGroupname(string groupname)
+        {
+            return _conversations.OfType<GroupConversation>().FirstOrDefault(gc => gc.GetGroupName().Equals(groupname));
+        }
+
+        private void UpdateScreen(Conversation c)
+        {
+            if (ActiveConversation != null && ActiveConversation.Equals(c))
+            {
+                ChatMessageUpdateDelegate?.Invoke();
+            }
+            ChatlistUpdateDelegate?.Invoke();
         }
 
         public List<Conversation> GetConversations()

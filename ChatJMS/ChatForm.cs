@@ -122,10 +122,15 @@ namespace ChatJMS
 
         private void OnTextChange(object s, EventArgs e)
         {
-            btnUsername.Enabled = !string.IsNullOrWhiteSpace(tbUsername.Text);
-            btnPersonalCon.Enabled = !string.IsNullOrWhiteSpace(tbPersonalCon.Text);
-            btnGroupCon.Enabled = !string.IsNullOrWhiteSpace(tbGroupCon.Text);
-            btnSendMessage.Enabled = !string.IsNullOrWhiteSpace(tbMessage.Text);
+            btnUsername.Enabled = IsNotEmpty(tbUsername);
+            btnPersonalCon.Enabled = IsNotEmpty(tbPersonalCon);
+            btnGroupCon.Enabled = IsNotEmpty(tbGroupCon);
+            btnSendMessage.Enabled = IsNotEmpty(tbMessage);
+        }
+
+        private static bool IsNotEmpty(Control tb)
+        {
+            return !string.IsNullOrWhiteSpace(tb.Text);
         }
     }
 }
