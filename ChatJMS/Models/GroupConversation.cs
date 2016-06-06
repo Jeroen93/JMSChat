@@ -14,12 +14,6 @@ namespace ChatJMS.Models
             _groupName = groupName;
         }
 
-        public GroupConversation(ChatMessage message, IDestination destinationQueue, string groupName) : base(message, destinationQueue)
-        {
-            _authors = new List<string> {message.GetAuthor()};
-            _groupName = groupName;
-        }
-
         public new void AddMessage(ChatMessage message)
         {
             base.AddMessage(message);
@@ -27,11 +21,6 @@ namespace ChatJMS.Models
             {
                 _authors.Add(message.GetAuthor());
             }
-        }
-
-        public List<string> GetAuthors()
-        {
-            return _authors;
         }
 
         public string GetGroupName()

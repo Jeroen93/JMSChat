@@ -41,8 +41,7 @@ namespace ChatJMS
         {
             if (flpConversations.InvokeRequired)
             {
-                var d = new UpdateChatListDelegate(UpdateChatList);
-                Invoke(d);
+                Invoke(new UpdateChatListDelegate(UpdateChatList));
                 return;
             }
             flpConversations.Controls.Clear();
@@ -61,8 +60,7 @@ namespace ChatJMS
         {
             if (flpChat.InvokeRequired)
             {
-                var d = new UpdateChatMessagesDelegate(UpdateChatMessages);
-                Invoke(d);
+                Invoke(new UpdateChatMessagesDelegate(UpdateChatMessages));
                 return;
             }
             flpChat.Controls.Clear();
@@ -110,9 +108,9 @@ namespace ChatJMS
 
         private void btnUsername_Click(object sender, EventArgs ea)
         {
-            _username = tbUsername.Text;
+            _username = tbUsername.Text.Trim();
             _connection = new JmsConnection(_username);
-            _connection.ChatlistUpdateDelegate += UpdateChatList;
+            _connection.ChatListUpdateDelegate += UpdateChatList;
             _connection.ChatMessageUpdateDelegate += UpdateChatMessages;
             FormClosing += (s, e) => { _connection.Disconnect(); };
             panelUsername.Visible = false;

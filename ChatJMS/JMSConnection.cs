@@ -10,7 +10,7 @@ namespace ChatJMS
 {
     internal class JmsConnection : IMessageListener
     {
-        public event ChatlistDelegate ChatlistUpdateDelegate;
+        public event ChatlistDelegate ChatListUpdateDelegate;
         public event ChatMessageDelegate ChatMessageUpdateDelegate;
 
         public Conversation ActiveConversation;
@@ -76,14 +76,13 @@ namespace ChatJMS
                 {
                     message.SetBooleanProperty("group", false);
                 }
-                //message.JMSReplyTo = GetDestination(_personalQueue);
                 producer.Send(message);
                 producer.Close();
                 return true;
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show(@"Error in SendMessage " + e.Message);
                 return false;
             }
         }
@@ -163,7 +162,7 @@ namespace ChatJMS
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show(@"Error in OnMessage " + e.Message);
             }
         }
 
@@ -196,14 +195,23 @@ namespace ChatJMS
 
         private void Translate(IBytesMessage received)
         {
-            var bytes = new byte[(int)received.BodyLength];
-            received.ReadBytes(bytes);
-            var messageToSend = _session.CreateBytesMessage();
-            messageToSend.WriteBytes(bytes);
-            messageToSend.JMSReplyTo = GetDestination(_personalQueue);
-            var producer = _session.CreateProducer(GetDestination("/queue/JmsTranslator"));
-            producer.Send(messageToSend);
-            producer.Close();
+            try
+            {
+                var bytes = new byte[(int)received.BodyLength];
+                received.ReadBytes(bytes);
+                var messageToSend = _session.CreateBytesMessage();
+                messageToSend.WriteBytes(bytes);
+                messageToSend.SetStringProperty("author", received.GetStringProperty("author"));
+                messageToSend.SetStringProperty("group", received.GetStringProperty("group"));
+                messageToSend.JMSReplyTo = GetDestination(_personalQueue);
+                var producer = _session.CreateProducer(GetDestination("/queue/JmsTranslator"));
+                producer.Send(messageToSend);
+                producer.Close();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(@"Error in Translate " + e.Message);
+            }
         }
 
         private PersonalConversation GetPersonalConversationByAuthor(string author)
@@ -222,7 +230,7 @@ namespace ChatJMS
             {
                 ChatMessageUpdateDelegate?.Invoke();
             }
-            ChatlistUpdateDelegate?.Invoke();
+            ChatListUpdateDelegate?.Invoke();
         }
 
         public List<Conversation> GetConversations()
